@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerControllerScript : MonoBehaviour
 {
     public float horizontalInput;
+    public float verticalInput;
     public float speed = 10.0f;
     public float xRange = 10;
     public GameObject projectilePrefab;
@@ -19,6 +20,7 @@ public class PlayerControllerScript : MonoBehaviour
     void Update()
     {
         horizontalInput =  Input.GetAxis("Horizontal");
+        verticalInput =  Input.GetAxis("Vertical");
         
         //Keep player in bounds
         if(transform.position.x < -xRange) {
@@ -31,6 +33,7 @@ public class PlayerControllerScript : MonoBehaviour
             Instantiate(projectilePrefab, transform.position, projectilePrefab.transform.rotation);
         }
         transform.Translate(Vector3.right*horizontalInput*Time.deltaTime*speed);
+        transform.Translate(Vector3.forward*verticalInput*Time.deltaTime*speed);
         
     }
 }
