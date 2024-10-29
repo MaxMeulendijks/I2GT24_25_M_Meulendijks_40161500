@@ -22,6 +22,7 @@ public class ColourPicker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Get the space of the image on the screen
         rectTransform = GetComponent<RectTransform>();
         colourTexture = GetComponent<Image>().mainTexture as Texture2D;
     }
@@ -29,8 +30,10 @@ public class ColourPicker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Check what colour is being selected only if cursor is on the image
         if(RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition)) {
             Vector2 delta;
+            //Treat left bottom of image as point 0 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out delta);
 
             float width = rectTransform.rect.width;
@@ -43,7 +46,9 @@ public class ColourPicker : MonoBehaviour
             int textureX = Mathf.RoundToInt(colourX * colourTexture.width);
             int textureY = Mathf.RoundToInt(colourY * colourTexture.height);
             
+            //Change the image next to it so player knows what colour they will click
             OnColourSelected?.Invoke(colourTexture.GetPixel(textureX, textureY));
+            //When selecting a colour, pass to a variable that can be read by Player object
             if(Input.GetMouseButtonDown(0)) {
                 colourPicked = colourTexture.GetPixel(textureX, textureY);
             }
