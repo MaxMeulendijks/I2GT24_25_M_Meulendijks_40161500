@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     private float verticalInput;
     public float speed;
     public ColourPicker colourPicker;
+    public Color colourPicked;
     private GameObject player;
 
     public LineRenderer northIndicator;
@@ -43,12 +44,16 @@ public class PlayerController : MonoBehaviour
 
             //Grab the rendered to change colour to whatever colour was selected
             MeshRenderer[] renderer = player.GetComponentsInChildren<MeshRenderer>();
-            renderer[0].material.color = colourPicker.colourPicked;
-            renderer[1].material.color = colourPicker.colourPicked;
+            colourPicked = colourPicker.colourPicked;
+            renderer[0].material.color = colourPicked;
+            renderer[1].material.color = colourPicked;
 
             //Get player colour
-            //TODO: HSV does not seem reliable, try switching method to RGB
-            Color.RGBToHSV(renderer[0].material.color, out float playerH, out float playerS, out float playerV);
+            string colourPickedHex = colourPicked.ToHexString();
+            Debug.Log("Hex colour string: "+colourPickedHex);
+            float playerH = int.Parse(colourPickedHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float playerS = int.Parse(colourPickedHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float playerV = int.Parse(colourPickedHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
 
             //Indicate visibility in each direction
             northVisible = CheckVisibility(1, playerH, playerS, playerV);
@@ -93,16 +98,17 @@ public class PlayerController : MonoBehaviour
         //Send out raycasts in a specific direction.
         if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity)) {
             //Get the color of the object that was hit
-            Color colorDirection = directionObject.collider.gameObject.GetComponent<MeshRenderer>().material.color;
-            Color.RGBToHSV(colorDirection, out float directionH, out float directionS, out float directionV);
+            string colourDirectionHex = directionObject.collider.gameObject.GetComponent<MeshRenderer>().material.color.ToHexString();
+            float directionH = int.Parse(colourDirectionHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float directionS = int.Parse(colourDirectionHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float directionV = int.Parse(colourDirectionHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
 
             //Treat color as if it was in 3D space, as we get 3 "coordinates"
-            //TODO: Change this to hex values as that might be more reliable
             float distance = Vector3.Distance(new Vector3(directionH, directionS, directionV), new Vector3(playerH, playerS, playerV));
-            Debug.Log("Colour distance: "+distance);
+            Debug.Log("Colour distancefrom direction "+directionIndication+":"+distance);
             //Change colour of indicator to indicate player visibility
             //TODO: When switched to hex values, update the distance, so it might be more reliable
-            if(distance > .15 && distance <.95) {
+            if(distance > 60) {
                 directionIndicator.startColor = Color.red;
                 directionIndicator.endColor = Color.red;
                 return true;
