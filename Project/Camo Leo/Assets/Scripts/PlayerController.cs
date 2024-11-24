@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,10 +14,13 @@ public class PlayerController : MonoBehaviour
     public Color colourPicked;
     private GameObject player;
 
-    public LineRenderer northIndicator;
-    public LineRenderer westIndicator;
-    public LineRenderer southIndicator;
-    public LineRenderer eastIndicator;
+    public Sprite visibleImage;
+    public Sprite hiddenImage;
+
+    public Image northIndicator;
+    public Image eastIndicator;
+    public Image southIndicator;
+    public Image westIndicator;
 
     public bool northVisible = false;
     public bool westVisible = false;
@@ -72,7 +76,7 @@ public class PlayerController : MonoBehaviour
     bool CheckVisibility(int directionIndication, float playerH, float playerS, float playerV) {
 
         Vector3 directionVector;
-        LineRenderer directionIndicator;
+        Image directionIndicator;
 
         switch(directionIndication) {
             case 1:
@@ -109,12 +113,12 @@ public class PlayerController : MonoBehaviour
             //Change colour of indicator to indicate player visibility
             //TODO: When switched to hex values, update the distance, so it might be more reliable
             if(distance > 60) {
-                directionIndicator.startColor = Color.red;
-                directionIndicator.endColor = Color.red;
+                directionIndicator.sprite = visibleImage;
+                directionIndicator.color = Color.red;
                 return true;
             } else {
-                directionIndicator.startColor = Color.green;
-                directionIndicator.endColor = Color.green;
+                directionIndicator.sprite = hiddenImage;
+                directionIndicator.color = Color.green;
                return false;
             }
         } else {
