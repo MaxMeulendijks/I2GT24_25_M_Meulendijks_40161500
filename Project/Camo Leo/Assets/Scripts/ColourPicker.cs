@@ -18,6 +18,7 @@ public class ColourPicker : MonoBehaviour
     public Color colourPicked;
     public ColourEvent OnColourSelected;
     public ColourEvent OnColourPicked;
+    public Image colourIndicator;
 
     // Start is called before the first frame update
     void Start()
@@ -30,28 +31,28 @@ public class ColourPicker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Check what colour is being selected only if cursor is on the image
-        if(RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition)) {
-            Vector2 delta;
-            //Treat left bottom of image as point 0 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out delta);
 
-            float width = rectTransform.rect.width;
-            float height = rectTransform.rect.height;
-            delta += new Vector2(width * .5f, height * .5f);
+        float mouseX = Input.GetAxis("Mouse X");
+        transform.Rotate(Vector3.forward, mouseX * 5);
+        Vector2 delta;
+        //Treat left bottom of image as point 0 
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, colourIndicator.transform.position, null, out delta);
 
-            float colourX = Mathf.Clamp(delta.x /width, 0, 1);
-            float colourY = Mathf.Clamp(delta.y /height, 0 , 1);
+        float width = rectTransform.rect.width;
+        float height = rectTransform.rect.height;
+        delta += new Vector2(width * .5f, height * .5f);
 
-            int textureX = Mathf.RoundToInt(colourX * colourTexture.width);
-            int textureY = Mathf.RoundToInt(colourY * colourTexture.height);
-            
-            //Change the image next to it so player knows what colour they will click
-            OnColourSelected?.Invoke(colourTexture.GetPixel(textureX, textureY));
-            //When selecting a colour, pass to a variable that can be read by Player object
-            if(Input.GetMouseButtonDown(0)) {
-                colourPicked = colourTexture.GetPixel(textureX, textureY);
-            }
+        float colourX = Mathf.Clamp(delta.x /width, 0, 1);
+        float colourY = Mathf.Clamp(delta.y /height, 0 , 1);
+
+        int textureX = Mathf.RoundToInt(colourX * colourTexture.width);
+        int textureY = Mathf.RoundToInt(colourY * colourTexture.height);
+        
+        //Change the image next to it so player knows what colour the indicator arrow is on
+        OnColourSelected?.Invoke(colourTexture.GetPixel(textureX, textureY));
+        //When selecting a colour, pass to a variable that can be read by Player object
+        if(Input.GetMouseButtonDown(0)) {
+            colourPicked = colourTexture.GetPixel(textureX, textureY);
         }
     }
 }
