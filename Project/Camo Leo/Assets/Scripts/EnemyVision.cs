@@ -8,7 +8,7 @@ public class EnemyVision : MonoBehaviour
     public float visionAngle = 30;
 
     public bool isInAngle, isInRange, isNotHidden;
-    public GameObject Player;
+    public GameObject player;
     // public TMP_Text rangeText;
     // public TMP_Text hiddenText;
     // public TMP_Text angleText;
@@ -18,12 +18,15 @@ public class EnemyVision : MonoBehaviour
     public LayerMask playerLayer;
     public LayerMask obstructionLayer;
     private PlayerController playerController;
+    private EnemyAI enemyAI;
 
     // Start is called before the first frame update
     void Start()
     {
         enemy = gameObject;
-        playerController = Player.GetComponent<PlayerController>();
+        enemyAI = gameObject.GetComponent<EnemyAI>();
+        playerController = player.GetComponent<PlayerController>();
+
     }
 
     // Update is called once per frame
@@ -36,9 +39,9 @@ public class EnemyVision : MonoBehaviour
 
     void LateUpdate() {
         
-        Vector3 enemyToPlayerDirection = (Player.transform.position - enemy.transform.position).normalized;
+        Vector3 enemyToPlayerDirection = (player.transform.position - enemy.transform.position).normalized;
         Vector3 enemySideForward = enemy.transform.forward;
-        float enemyToPlayerDistance = Vector3.Distance(enemy.transform.position, Player.transform.position);
+        float enemyToPlayerDistance = Vector3.Distance(enemy.transform.position, player.transform.position);
 
         //Check player is in range of vision
         if(enemyToPlayerDistance < visionRange/2) {
@@ -77,9 +80,12 @@ public class EnemyVision : MonoBehaviour
             // detectedText.text = "Found";
             // detectedText.color = Color.red;
             spotLight.color = Color.red;
-            playerController.gameOver = true;
-            detectedText.text = "GAME OVER \n\n Press SPACE to try again";
-        } else if (!playerController.gameOver) {
+            enemyAI.checkingLocation = true;
+            enemyAI.chaseStarted = false;
+            enemyAI.checkingLastLocation = false;
+            // playerController.gameOver = true;
+            // detectedText.text = "GAME OVER \n\n Press SPACE to try again";
+        } else if (!playerController.gameOver && enemyAI.checkingLocation == false) {
             // detectedText.text = "Not found";
             // detectedText.color = Color.green;
             spotLight.color = Color.green;
@@ -87,14 +93,12 @@ public class EnemyVision : MonoBehaviour
     }
 
     void CheckCamo(Vector3 enemySideForward){
-        //TODO: Float comparison does not work for patrolling guard - double check why
-        //TODO: Wall hugging seems to prevent proper functioning of the camo, something with raytrace?
         //Check in what direction enemy is looking, to know what value to compare against.
         float directionNorth = Vector3.Dot(enemySideForward, Vector3.forward);
         float directionEast = Vector3.Dot(enemySideForward, Vector3.left);
         float directionWest = Vector3.Dot(enemySideForward, Vector3.right);
         float directionSouth = Vector3.Dot(enemySideForward, Vector3.back);
-        Debug.Log(enemySideForward);
+        //Debug.Log(enemySideForward);
 
         //Use dot to check what direction enemy is looking
         if(directionNorth > .90f && playerController.northVisible) {

@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
 
             //Get player colour
             string colourPickedHex = colourPicked.ToHexString();
-            Debug.Log("Hex colour string: "+colourPickedHex);
+            //Debug.Log("Hex colour string: "+colourPickedHex);
             float playerH = int.Parse(colourPickedHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
             float playerS = int.Parse(colourPickedHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
             float playerV = int.Parse(colourPickedHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour
 
             //Treat color as if it was in 3D space, as we get 3 "coordinates"
             float distance = Vector3.Distance(new Vector3(directionH, directionS, directionV), new Vector3(playerH, playerS, playerV));
-            Debug.Log("Colour distancefrom direction "+directionIndication+":"+distance);
+            //Debug.Log("Colour distancefrom direction "+directionIndication+":"+distance);
             //Change colour of indicator to indicate player visibility
 
             if(distance > 60) {
