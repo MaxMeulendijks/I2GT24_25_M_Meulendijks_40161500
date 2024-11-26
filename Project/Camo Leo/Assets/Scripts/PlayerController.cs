@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public bool southVisible = false;
     public bool eastVisible = false;
     public bool gameOver = false;
+    public bool keyFound = false;
 
     // Start is called before the first frame update
     void Start()
@@ -111,7 +112,7 @@ public class PlayerController : MonoBehaviour
             float distance = Vector3.Distance(new Vector3(directionH, directionS, directionV), new Vector3(playerH, playerS, playerV));
             Debug.Log("Colour distancefrom direction "+directionIndication+":"+distance);
             //Change colour of indicator to indicate player visibility
-            //TODO: When switched to hex values, update the distance, so it might be more reliable
+
             if(distance > 60) {
                 directionIndicator.sprite = visibleImage;
                 directionIndicator.color = Color.red;
