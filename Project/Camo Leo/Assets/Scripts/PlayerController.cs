@@ -56,15 +56,15 @@ public class PlayerController : MonoBehaviour
             //Get player colour
             string colourPickedHex = colourPicked.ToHexString();
             //Debug.Log("Hex colour string: "+colourPickedHex);
-            float playerH = int.Parse(colourPickedHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
-            float playerS = int.Parse(colourPickedHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
-            float playerV = int.Parse(colourPickedHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float playerRed = int.Parse(colourPickedHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float playerGreen = int.Parse(colourPickedHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float playerBlue = int.Parse(colourPickedHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
 
             //Indicate visibility in each direction
-            northVisible = CheckVisibility(1, playerH, playerS, playerV);
-            westVisible = CheckVisibility(2, playerH, playerS, playerV);
-            southVisible = CheckVisibility(3, playerH, playerS, playerV);
-            eastVisible = CheckVisibility(4, playerH, playerS, playerV);
+            northVisible = CheckVisibility(1, playerRed, playerGreen, playerBlue);
+            westVisible = CheckVisibility(2, playerRed, playerGreen, playerBlue);
+            southVisible = CheckVisibility(3, playerRed, playerGreen, playerBlue);
+            eastVisible = CheckVisibility(4, playerRed, playerGreen, playerBlue);
         } else {
             //Reset scene in case of game over or victory
             if(Input.GetKeyDown(KeyCode.Space)) {
@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    bool CheckVisibility(int directionIndication, float playerH, float playerS, float playerV) {
+    bool CheckVisibility(int directionIndication, float playerRed, float playerGreen, float playerBlue) {
 
         Vector3 directionVector;
         Image directionIndicator;
@@ -104,12 +104,12 @@ public class PlayerController : MonoBehaviour
         if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity)) {
             //Get the color of the object that was hit
             string colourDirectionHex = directionObject.collider.gameObject.GetComponent<MeshRenderer>().material.color.ToHexString();
-            float directionH = int.Parse(colourDirectionHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
-            float directionS = int.Parse(colourDirectionHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
-            float directionV = int.Parse(colourDirectionHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float directionRed = int.Parse(colourDirectionHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float directionGreen = int.Parse(colourDirectionHex.Substring(2, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
+            float directionBlue = int.Parse(colourDirectionHex.Substring(4, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
 
             //Treat color as if it was in 3D space, as we get 3 "coordinates"
-            float distance = Vector3.Distance(new Vector3(directionH, directionS, directionV), new Vector3(playerH, playerS, playerV));
+            float distance = Vector3.Distance(new Vector3(directionRed, directionGreen, directionBlue), new Vector3(playerRed, playerGreen, playerBlue));
             //Debug.Log("Colour distancefrom direction "+directionIndication+":"+distance);
             //Change colour of indicator to indicate player visibility
 
