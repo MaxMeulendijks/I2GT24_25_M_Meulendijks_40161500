@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,6 +11,8 @@ public class EnemyAI : MonoBehaviour
     public Transform[] wayPoints;
     private Vector3 playerPosition;
     public GameObject player;
+    public PlayerController playerController;
+    public TextMeshProUGUI detectedText;
     private int wayPointsIndex;
     Vector3 nextWaypoint;
     public bool playerSpotted;
@@ -22,6 +25,7 @@ public class EnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerController = player.GetComponent<PlayerController>();
         startPosition = gameObject.transform.position;
         startRotation = gameObject.transform.rotation;
         navigationAgent = GetComponent<NavMeshAgent>();
@@ -36,7 +40,7 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         //If at last seen player location, focus on looking around, otherwise do actions.
-        if(checkingLastLocation == false) {
+        if(checkingLastLocation == false && !playerController.gameOver) {
             //If player was seen, focus on chasing
             if(playerSpotted == true) {
                 //If chase in progress, check whether you've reached player's last known location
@@ -100,7 +104,7 @@ public class EnemyAI : MonoBehaviour
         Debug.LogError("Looking forward");
         yield return new WaitForSeconds(1f);
         //If player is found, stop and chase
-        if(playerSpotted == true && chaseStarted == false) {
+        if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
             yield break;
         }
@@ -109,7 +113,7 @@ public class EnemyAI : MonoBehaviour
         Debug.LogError("Looking backward");
         yield return new WaitForSeconds(1f);
         //If player is found, stop and chase
-        if(playerSpotted == true && chaseStarted == false) {
+        if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
             yield break;
         }
@@ -118,7 +122,7 @@ public class EnemyAI : MonoBehaviour
         Debug.LogError("Looking right");
         yield return new WaitForSeconds(1f);
         //If player is found, stop and chase
-        if(playerSpotted == true && chaseStarted == false) {
+        if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
             yield break;
         }
@@ -134,5 +138,13 @@ public class EnemyAI : MonoBehaviour
         playerPosition = new Vector3(0, 0, 0);
 
         SetCurrentWayPoint(wayPoints.Length == 0 ? true : false);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if(other.gameObject.CompareTag("Player")) {
+            playerController.gameOver = true;
+            detectedText.text = "Darn, got caught!\n\nPress Space to try again";
+        }
     }
 }

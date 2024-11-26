@@ -316,6 +316,7 @@ GameObject:
   - component: {fileID: 9147921714612523073}
   - component: {fileID: 3842193650289862135}
   - component: {fileID: 4515852814643591271}
+  - component: {fileID: -7215363225797012327}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Guard
@@ -358,7 +359,7 @@ MonoBehaviour:
   isInAngle: 0
   isInRange: 0
   isNotHidden: 0
-  Player: {fileID: 0}
+  player: {fileID: 0}
   detectedText: {fileID: 0}
   spotLight: {fileID: 9041337491171129665}
   playerLayer:
@@ -402,3 +403,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wayPoints: []
+  player: {fileID: 0}
+  playerController: {fileID: 0}
+  detectedText: {fileID: 0}
+  playerSpotted: 0
+  chaseStarted: 0
+  checkingLastLocation: 0
+  returnToStart: 0
+--- !u!65 &-7215363225797012327
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8171042493200246540}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
