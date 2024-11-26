@@ -7,6 +7,8 @@ TagManager:
   - Guard
   - Ground
   - Wall
+  - Key
+  - Interactive
   layers:
   - Default
   - TransparentFX
