@@ -12,7 +12,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject player;
     private int wayPointsIndex;
     Vector3 nextWaypoint;
-    public bool checkingLocation;
+    public bool playerSpotted;
     public bool chaseStarted;
     public bool checkingLastLocation;
     public bool returnToStart;
@@ -35,13 +35,17 @@ public class EnemyAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //If at last seen player location, focus on looking around, otherwise do actions.
         if(checkingLastLocation == false) {
-            if(checkingLocation == true) {
+            //If player was seen, focus on chasing
+            if(playerSpotted == true) {
+                //If chase in progress, check whether you've reached player's last known location
                 if(chaseStarted == true && Vector3.Distance(transform.position, playerPosition) < 1) {
                     Debug.LogError("Have a look around");
                     checkingLastLocation = true;
                     StartCoroutine(InvestigateLastSeenLocation());
                 } 
+                //If player is seen, start a run for their position (ignore return to start)
                 else if (chaseStarted == false) {
                     Debug.LogError("The chase has commenced");
                     chaseStarted = true;
@@ -49,12 +53,14 @@ public class EnemyAI : MonoBehaviour
                     playerPosition = player.transform.position;
                     navigationAgent.SetDestination(playerPosition);
                 }
+            //If player wasn't seen, focus on guarding
             } else {
                 //If guard has reached waypoint, move to next waypoint.
                 if(wayPoints.Length > 0 && Vector3.Distance(transform.position, nextWaypoint) < 1) {
                     Debug.LogError("Checkout next checkpoint");
                     IncrementWaypoint();
                     SetCurrentWayPoint(false);
+                //If guard gave chase and has no patrol route, make effort to return to starting position
                 } else if (returnToStart && Vector3.Distance(transform.position, startPosition) < 1) {
                     gameObject.transform.SetPositionAndRotation(transform.position, startRotation);
                 }
@@ -66,16 +72,17 @@ public class EnemyAI : MonoBehaviour
 
     void SetCurrentWayPoint(bool useStartPosition) {
         Vector3 destination;
+        //Set start position if stationary guard
         if(useStartPosition) {
             destination = startPosition;
             returnToStart = true;
+        //Set waypoint if patrolling guard
         } else {
             destination = wayPoints[wayPointsIndex].position;
             nextWaypoint = destination;
         }
 
         navigationAgent.SetDestination(destination);
-        gameObject.transform.LookAt(destination);
     }
 
     void IncrementWaypoint() {
@@ -88,33 +95,41 @@ public class EnemyAI : MonoBehaviour
     }
 
     IEnumerator InvestigateLastSeenLocation() {
+        //Look forward for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.forward);
         Debug.LogError("Looking forward");
-        yield return new WaitForSeconds(1);
-        if(checkingLocation == true && chaseStarted == false) {
+        yield return new WaitForSeconds(1f);
+        //If player is found, stop and chase
+        if(playerSpotted == true && chaseStarted == false) {
             checkingLastLocation = false;
             yield break;
         }
+        //Look backward for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.back);
         Debug.LogError("Looking backward");
-        yield return new WaitForSeconds(1);
-        if(checkingLocation == true && chaseStarted == false) {
+        yield return new WaitForSeconds(1f);
+        //If player is found, stop and chase
+        if(playerSpotted == true && chaseStarted == false) {
             checkingLastLocation = false;
             yield break;
         }
+        //Look right for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.right);
         Debug.LogError("Looking right");
-        yield return new WaitForSeconds(1);
-        if(checkingLocation == true && chaseStarted == false) {
+        yield return new WaitForSeconds(1f);
+        //If player is found, stop and chase
+        if(playerSpotted == true && chaseStarted == false) {
             checkingLastLocation = false;
             yield break;
         }
+        //Look left for layer
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.left);
         Debug.LogError("Looking left");
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(1f);
+        //Player not found, so stop chase and return to start or waypoint
         checkingLastLocation = false;
         Debug.LogError("Are you getting here?");
-        checkingLocation = false;
+        playerSpotted = false;
         chaseStarted = false;
         playerPosition = new Vector3(0, 0, 0);
 

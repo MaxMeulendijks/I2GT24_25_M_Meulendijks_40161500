@@ -46,48 +46,29 @@ public class EnemyVision : MonoBehaviour
         //Check player is in range of vision
         if(enemyToPlayerDistance < visionRange/2) {
             isInRange = true;
-            // rangeText.text = "In range";
-            // rangeText.color = Color.red;
         } else {
             isInRange = false;
-            // rangeText.text = "Not in range";
-            // rangeText.color = Color.green;
         }
 
         //Check if player is within the cone
         if(Vector3.Angle(enemySideForward, enemyToPlayerDirection) < visionAngle) {
             isInAngle = true;
-            // angleText.text = "In angle";
-            // angleText.color = Color.red;
-        } else {
-            // angleText.text = "Not in angle";
-            // angleText.color = Color.green;
         }
 
         //Check if player is not hidden behind an obstacle (like a wall) in the obstacle layer
         if(!Physics.Raycast(enemy.transform.position, enemyToPlayerDirection, enemyToPlayerDistance, obstructionLayer)) {
                 //If not hidden behind object, check if player closely matches object behind them in colour.
                 CheckCamo(enemySideForward);
-                // hiddenText.text = "Not hidden";
-                // hiddenText.color = Color.red;
-        } else {
-            // hiddenText.text = "Hidden";
-            // hiddenText.color = Color.green;
         }
 
-        //If within range, cone, and not hidden 
+        //If within range, cone, and not hidden - player has been spotted
         if(isInAngle && isInRange && isNotHidden && !playerController.gameOver) {
-            // detectedText.text = "Found";
-            // detectedText.color = Color.red;
             spotLight.color = Color.red;
-            enemyAI.checkingLocation = true;
+            enemyAI.playerSpotted = true;
             enemyAI.chaseStarted = false;
             enemyAI.checkingLastLocation = false;
-            // playerController.gameOver = true;
-            // detectedText.text = "GAME OVER \n\n Press SPACE to try again";
-        } else if (!playerController.gameOver && enemyAI.checkingLocation == false) {
-            // detectedText.text = "Not found";
-            // detectedText.color = Color.green;
+        //If player hasn't been spotted, indicate green light
+        } else if (!playerController.gameOver && enemyAI.playerSpotted == false) {
             spotLight.color = Color.green;
         }
     }
