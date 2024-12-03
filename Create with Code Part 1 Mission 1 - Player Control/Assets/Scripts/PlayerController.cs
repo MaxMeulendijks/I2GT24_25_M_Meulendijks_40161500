@@ -4,19 +4,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private float speed = 15.0f;
-    private float turnSpeed = 25.0f;
+    [SerializeField] private float speed = 15.0f;
+    private const float turnSpeed = 25.0f;
     private float horizontalInput;
     private float forwardInput;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         //Fetch player input for left/right keys
         horizontalInput = Input.GetAxis("Horizontal");

@@ -6,7 +6,7 @@ public class Cameras : MonoBehaviour
 {
     public Camera mainCamera;
     public Camera bonnetCamera;
-    private boolean cameraSwitch;
+    private bool cameraSwitch;
 
 
     // Start is called before the first frame update
@@ -14,13 +14,6 @@ public class Cameras : MonoBehaviour
     {
         mainCamera.enabled = true;
         bonnetCamera.enabled = false;
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
         
     }
 }
