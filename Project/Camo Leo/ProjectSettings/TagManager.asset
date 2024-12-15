@@ -10,6 +10,8 @@ TagManager:
   - Key
   - Interactive
   - Obstacle
+  - Skin
+  - PlayerModel
   layers:
   - Default
   - TransparentFX

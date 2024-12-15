@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    private float horizontalInput;
-    private float verticalInput;
+    public float horizontalInput;
+    public float verticalInput;
+    public Animator animator;
     public float speed;
     public ColourPicker colourPicker;
     public Color colourPicked;
@@ -28,6 +30,7 @@ public class PlayerController : MonoBehaviour
     public bool eastVisible = false;
     public bool gameOver = false;
     public bool keyFound = false;
+    public bool directionForward = true;
 
     // Start is called before the first frame update
     void Start()
@@ -48,10 +51,9 @@ public class PlayerController : MonoBehaviour
             transform.Translate(Vector3.forward*verticalInput*Time.deltaTime*speed);
 
             //Grab the rendered to change colour to whatever colour was selected
-            MeshRenderer[] renderer = player.GetComponentsInChildren<MeshRenderer>();
+            SkinnedMeshRenderer[] renderer = player.GetComponentsInChildren<SkinnedMeshRenderer>();
             colourPicked = colourPicker.colourPicked;
             renderer[0].material.color = colourPicked;
-            renderer[1].material.color = colourPicked;
 
             //Get player colour
             string colourPickedHex = colourPicked.ToHexString();
@@ -65,6 +67,29 @@ public class PlayerController : MonoBehaviour
             westVisible = CheckVisibility(2, playerRed, playerGreen, playerBlue);
             southVisible = CheckVisibility(3, playerRed, playerGreen, playerBlue);
             eastVisible = CheckVisibility(4, playerRed, playerGreen, playerBlue);
+
+            
+            if (verticalInput < 0 && directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+            } else if (verticalInput > 0 && !directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+            }
+
+            animator.SetFloat("vertical", verticalInput);
+            animator.SetFloat("horizontal", horizontalInput);
+
         } else {
             //Reset scene in case of game over or victory
             if(Input.GetKeyDown(KeyCode.Space)) {
