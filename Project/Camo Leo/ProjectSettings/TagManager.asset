@@ -9,6 +9,7 @@ TagManager:
   - Wall
   - Key
   - Interactive
+  - Obstacle
   layers:
   - Default
   - TransparentFX

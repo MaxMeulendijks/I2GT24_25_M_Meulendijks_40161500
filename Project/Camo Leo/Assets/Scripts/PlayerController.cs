@@ -101,7 +101,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Send out raycasts in a specific direction.
-        if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity)) {
+        if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity) && directionObject.collider.gameObject.CompareTag("Obstacle")) {
             //Get the color of the object that was hit
             string colourDirectionHex = directionObject.collider.gameObject.GetComponent<MeshRenderer>().material.color.ToHexString();
             float directionRed = int.Parse(colourDirectionHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
