@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     public bool southVisible = false;
     public bool eastVisible = false;
     public bool gameOver = false;
+    public bool gameWon = false;
     public bool keyFound = false;
     public bool directionForward = true;
 
@@ -91,6 +92,18 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("horizontal", horizontalInput);
 
         } else {
+            if (directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+                animator.SetBool("gameOver", gameOver);
+                animator.SetBool("victory", gameWon);
+            }
+
             //Reset scene in case of game over or victory
             if(Input.GetKeyDown(KeyCode.Space)) {
                 SceneManager.LoadScene("Tutorial");

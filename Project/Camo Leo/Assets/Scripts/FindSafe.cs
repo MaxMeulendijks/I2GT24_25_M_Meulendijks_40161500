@@ -23,6 +23,7 @@ public class FindSafe : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player") && playerController.keyFound) {
             playerController.gameOver = true;
+            playerController.gameWon = true;
             detectedText.text = "You Won! \n\nCount that money\\Press Space to try again";
         }
     }
