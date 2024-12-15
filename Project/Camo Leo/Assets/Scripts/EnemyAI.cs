@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -22,6 +20,9 @@ public class EnemyAI : MonoBehaviour
     Vector3 startPosition;
     Quaternion startRotation;
 
+    public float baseSpeed = 6f;
+    public float chaseSpeed = 8f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +38,7 @@ public class EnemyAI : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         //If at last seen player location, focus on looking around, otherwise do actions.
         if(checkingLastLocation == false && !playerController.gameOver) {
@@ -48,17 +49,30 @@ public class EnemyAI : MonoBehaviour
                     Debug.LogError("Have a look around");
                     checkingLastLocation = true;
                     StartCoroutine(InvestigateLastSeenLocation());
-                } 
+                }
                 //If player is seen, start a run for their position (ignore return to start)
                 else if (chaseStarted == false) {
                     Debug.LogError("The chase has commenced");
+                    navigationAgent.speed = chaseSpeed;
                     chaseStarted = true;
                     returnToStart = false;
                     playerPosition = player.transform.position;
+                    // Determine which direction to rotate towards
+                    Vector3 targetDirection = playerPosition - transform.position;
+
+                    // The step size is equal to speed times frame time.
+                    float singleStep = 0.1f * Time.deltaTime;
+
+                    // Rotate the forward vector towards the target direction by one step
+                    Vector3 newDirection = Vector3.RotateTowards(transform.forward, targetDirection, singleStep, 0.0f);
+
+                    // Calculate a rotation a step closer to the target and applies rotation to this object
+                    transform.rotation = Quaternion.LookRotation(newDirection);
                     navigationAgent.SetDestination(playerPosition);
                 }
             //If player wasn't seen, focus on guarding
             } else {
+                navigationAgent.speed = baseSpeed;
                 //If guard has reached waypoint, move to next waypoint.
                 if(wayPoints.Length > 0 && Vector3.Distance(transform.position, nextWaypoint) < 1) {
                     Debug.LogError("Checkout next checkpoint");
@@ -102,7 +116,7 @@ public class EnemyAI : MonoBehaviour
         //Look forward for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.forward);
         Debug.LogError("Looking forward");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.7f);
         //If player is found, stop and chase
         if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
@@ -111,7 +125,7 @@ public class EnemyAI : MonoBehaviour
         //Look backward for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.back);
         Debug.LogError("Looking backward");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.7f);
         //If player is found, stop and chase
         if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
@@ -120,7 +134,7 @@ public class EnemyAI : MonoBehaviour
         //Look right for player
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.right);
         Debug.LogError("Looking right");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.7f);
         //If player is found, stop and chase
         if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
             checkingLastLocation = false;
@@ -128,13 +142,19 @@ public class EnemyAI : MonoBehaviour
         }
         //Look left for layer
         gameObject.transform.LookAt(gameObject.transform.position+Vector3.left);
+        yield return new WaitForSeconds(.7f);      
         Debug.LogError("Looking left");
-        yield return new WaitForSeconds(1f);
+        if((playerSpotted == true && chaseStarted == false) || playerController.gameOver) {
+            checkingLastLocation = false;
+            yield break;
+        }
+
         //Player not found, so stop chase and return to start or waypoint
         checkingLastLocation = false;
         Debug.LogError("Are you getting here?");
         playerSpotted = false;
         chaseStarted = false;
+        navigationAgent.speed = baseSpeed;
         playerPosition = new Vector3(0, 0, 0);
 
         SetCurrentWayPoint(wayPoints.Length == 0 ? true : false);

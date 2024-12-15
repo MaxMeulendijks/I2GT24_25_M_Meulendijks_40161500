@@ -100,10 +100,11 @@ public class PlayerController : MonoBehaviour
                         transform.RotateAround(transform.position, Vector3.up, 180);
                     }
                 }
-                animator.SetBool("gameOver", gameOver);
-                animator.SetBool("victory", gameWon);
             }
-
+            
+            animator.SetBool("gameOver", gameOver);
+            animator.SetBool("victory", gameWon);
+            
             //Reset scene in case of game over or victory
             if(Input.GetKeyDown(KeyCode.Space)) {
                 SceneManager.LoadScene("Tutorial");
