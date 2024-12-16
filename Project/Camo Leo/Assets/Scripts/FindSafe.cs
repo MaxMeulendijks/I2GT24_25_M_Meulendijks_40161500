@@ -7,6 +7,7 @@ public class FindSafe : MonoBehaviour
 {
     public PlayerController playerController;
     public TMP_Text detectedText;
+    public GameObject textPanel;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +25,8 @@ public class FindSafe : MonoBehaviour
         if(other.gameObject.CompareTag("Player") && playerController.keyFound) {
             playerController.gameOver = true;
             playerController.gameWon = true;
-            detectedText.text = "You Won! \n\nCount that money\\Press Space to try again";
+            textPanel.SetActive(true);
+            detectedText.text = "You Won! \nSpace to Retry | X to leave";
         }
     }
 }

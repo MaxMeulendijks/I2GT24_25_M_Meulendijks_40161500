@@ -11,6 +11,7 @@ public class EnemyAI : MonoBehaviour
     public GameObject player;
     public PlayerController playerController;
     public TextMeshProUGUI detectedText;
+    public GameObject textPanel;
     private int wayPointsIndex;
     Vector3 nextWaypoint;
     public bool playerSpotted;
@@ -164,7 +165,8 @@ public class EnemyAI : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player")) {
             playerController.gameOver = true;
-            detectedText.text = "Darn, got caught!\n\nPress Space to try again";
+            textPanel.SetActive(true);
+            detectedText.text = "Darn, got caught!\nSpace to Retry | X to leave";
         }
     }
 }

@@ -108,6 +108,8 @@ public class PlayerController : MonoBehaviour
             //Reset scene in case of game over or victory
             if(Input.GetKeyDown(KeyCode.Space)) {
                 SceneManager.LoadScene("Tutorial");
+            } else if(Input.GetKeyDown(KeyCode.X)){
+                SceneManager.LoadScene("Menu");
             }
         }
         
