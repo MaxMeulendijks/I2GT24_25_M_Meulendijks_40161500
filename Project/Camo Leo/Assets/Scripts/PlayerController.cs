@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
             southVisible = CheckVisibility(3, playerRed, playerGreen, playerBlue);
             eastVisible = CheckVisibility(4, playerRed, playerGreen, playerBlue);
 
-            
+            //Turn player model around if moving downwards/upwards for first time
             if (verticalInput < 0 && directionForward) {
                 directionForward = !directionForward;
                 Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
@@ -92,6 +92,7 @@ public class PlayerController : MonoBehaviour
             animator.SetFloat("horizontal", horizontalInput);
 
         } else {
+            //Make sure player faces camera for gameOver animation
             if (directionForward) {
                 directionForward = !directionForward;
                 Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
@@ -102,10 +103,11 @@ public class PlayerController : MonoBehaviour
                 }
             }
             
+            //Set animations as relevant for game over type
             animator.SetBool("gameOver", gameOver);
             animator.SetBool("victory", gameWon);
             
-            //Reset scene in case of game over or victory
+            //Change scene in case of game over or victory - menu or retry
             if(Input.GetKeyDown(KeyCode.Space)) {
                 SceneManager.LoadScene("Tutorial");
             } else if(Input.GetKeyDown(KeyCode.X)){

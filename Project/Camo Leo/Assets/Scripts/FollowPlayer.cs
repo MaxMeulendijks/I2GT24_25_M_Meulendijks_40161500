@@ -22,6 +22,7 @@ public class FollowPlayer : MonoBehaviour
     void Update()
     {
         if(playerController.gameOver){
+            //Zoom in on player to foreground animation + turn off UI elements for cleaner effect
             transform.position = player.transform.position + gameOverOffset;
             visibilityIndicators.SetActive(false);
             colourWheel.SetActive(false);
