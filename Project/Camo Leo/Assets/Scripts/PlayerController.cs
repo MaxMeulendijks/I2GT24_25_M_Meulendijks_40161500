@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,8 +5,9 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    private float horizontalInput;
-    private float verticalInput;
+    public float horizontalInput;
+    public float verticalInput;
+    public Animator animator;
     public float speed;
     public ColourPicker colourPicker;
     public Color colourPicked;
@@ -27,7 +26,9 @@ public class PlayerController : MonoBehaviour
     public bool southVisible = false;
     public bool eastVisible = false;
     public bool gameOver = false;
+    public bool gameWon = false;
     public bool keyFound = false;
+    public bool directionForward = true;
 
     // Start is called before the first frame update
     void Start()
@@ -48,10 +49,9 @@ public class PlayerController : MonoBehaviour
             transform.Translate(Vector3.forward*verticalInput*Time.deltaTime*speed);
 
             //Grab the rendered to change colour to whatever colour was selected
-            MeshRenderer[] renderer = player.GetComponentsInChildren<MeshRenderer>();
+            SkinnedMeshRenderer[] renderer = player.GetComponentsInChildren<SkinnedMeshRenderer>();
             colourPicked = colourPicker.colourPicked;
             renderer[0].material.color = colourPicked;
-            renderer[1].material.color = colourPicked;
 
             //Get player colour
             string colourPickedHex = colourPicked.ToHexString();
@@ -65,10 +65,50 @@ public class PlayerController : MonoBehaviour
             westVisible = CheckVisibility(2, playerRed, playerGreen, playerBlue);
             southVisible = CheckVisibility(3, playerRed, playerGreen, playerBlue);
             eastVisible = CheckVisibility(4, playerRed, playerGreen, playerBlue);
+
+            //Turn player model around if moving downwards/upwards for first time
+            if (verticalInput < 0 && directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+            } else if (verticalInput > 0 && !directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+            }
+
+            animator.SetFloat("vertical", verticalInput);
+            animator.SetFloat("horizontal", horizontalInput);
+
         } else {
-            //Reset scene in case of game over or victory
+            //Make sure player faces camera for gameOver animation
+            if (directionForward) {
+                directionForward = !directionForward;
+                Transform[] childTransforms = gameObject.GetComponentsInChildren<Transform>();
+                foreach(Transform transform in childTransforms) {
+                    if(transform.CompareTag("PlayerModel")) {
+                        transform.RotateAround(transform.position, Vector3.up, 180);
+                    }
+                }
+            }
+            
+            //Set animations as relevant for game over type
+            animator.SetBool("gameOver", gameOver);
+            animator.SetBool("victory", gameWon);
+            
+            //Change scene in case of game over or victory - menu or retry
             if(Input.GetKeyDown(KeyCode.Space)) {
                 SceneManager.LoadScene("Tutorial");
+            } else if(Input.GetKeyDown(KeyCode.X)){
+                SceneManager.LoadScene("Menu");
             }
         }
         
@@ -101,7 +141,7 @@ public class PlayerController : MonoBehaviour
         }
 
         //Send out raycasts in a specific direction.
-        if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity)) {
+        if(Physics.Raycast(player.transform.position, directionVector, out RaycastHit directionObject, Mathf.Infinity) && directionObject.collider.gameObject.CompareTag("Obstacle")) {
             //Get the color of the object that was hit
             string colourDirectionHex = directionObject.collider.gameObject.GetComponent<MeshRenderer>().material.color.ToHexString();
             float directionRed = int.Parse(colourDirectionHex.Substring(0, 2), System.Globalization.NumberStyles.AllowHexSpecifier);
